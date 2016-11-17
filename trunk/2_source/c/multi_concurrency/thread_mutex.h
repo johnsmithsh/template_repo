@@ -1,6 +1,9 @@
 #ifndef __THREAD_MUTEX_H_
 #define __THREAD_MUTEX_H_
 
+#ifdef __STD_BOOST_MACRO__
+#include "boost/thread/mutex.hpp"
+#endif
 /**
  * 文件
  * 说明
@@ -31,6 +34,10 @@ class Thread_Mutex
      virtual void unlock();
      //试图加锁
      virtual int try_lock(int milli_second=0);
+   private:
+#ifdef __STD_BOOST_MACRO__
+     boost::mutex m_mutex;
+#endif
 };
 
 
@@ -39,7 +46,7 @@ class Thread_Mutex
 class Auto_Thread_Mutex
 {
    public:
-      Auto_Thead_Mutex(Thead_Mutex *pMutex, int mill_second=0)
+      Auto_Thread_Mutex(Thread_Mutex *pMutex, int mill_second=0)
       {
           m_thread_lock=pMutex;
           m_thread_lock->lock();
@@ -49,10 +56,7 @@ class Auto_Thread_Mutex
           m_thread_lock->unlock();
       }
       
-      bool opertator ==(const Auto_Thread_Mutex &obj)
-      {
-         return this->m_thread_lock==obj.m_thread_lock;
-      }
+      friend int operator==(const Auto_Thread_Mutex &obj1, const Auto_Thread_Mutex &obj2);
    private:
       Thread_Mutex *m_thread_lock;
 
@@ -60,10 +64,14 @@ class Auto_Thread_Mutex
       //禁止无参数构造函数
       Auto_Thread_Mutex(){}
       //禁止拷贝构造
-      Auto_Thread_Mutex &Auto_Thread_Mutex(const Auto_Thread_Mutex &obj) {}
+      Auto_Thread_Mutex(const Auto_Thread_Mutex &obj);// { return *this;}
       //禁止值拷贝
-      Auto_Thread_Mutex & operator=(const Auto_Thread_Mutex &obj) {}
+      Auto_Thread_Mutex & operator=(const Auto_Thread_Mutex &obj);// {}
      
 };
 
+inline int operator==(const Auto_Thread_Mutex &obj1, const Auto_Thread_Mutex &obj2)
+{
+   return (obj1.m_thread_lock==obj2.m_thread_lock) ? 1 : 0;
+}
 #endif
