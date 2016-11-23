@@ -3,6 +3,19 @@
 
 #include <pthread.h> //编译需要 -lpthread
 
+/**
+  从socket获取管理命令
+  命令格式: type:cmd_type:param
+    type='1',单字节,表示命令采用用户友好方式;
+    cmd_type: set_ini/get_ini #设置或获取配置文件
+    show:info/version:显示服务消息
+    log_level #日志级别
+       0-全部; 2000-debug; 3000-info; 
+       4000-warn; 6000-error; 8000-fatal;
+  命令说明:
+    每个命令及参数<=1024字节;
+    
+ */
 int app_console::start_thread_recv_cmd(int port)
 {
   pthread_t __self_thread; 
@@ -37,7 +50,7 @@ int app_console::start_thread_recv_cmd(int port)
      return -4;
   }
  
-  char recv_buf[1024];
+  char recv_buf[10240];
   int recv_len=0;
   int conn_fd;
  
