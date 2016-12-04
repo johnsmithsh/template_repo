@@ -69,15 +69,31 @@ COMMON_OBJS:= $(COMMON_SOURCES:.cpp=.o)
 SOURCES:=$(COMMON_SOURCES) $(AUTO_SOURCES)
 OBJS:= $(AUTO_OBJS) $(COMMON_OBJS)
 
-
+#单元测试
+unittest_FLAG:=1
+unittest_SOURCES:=./unit_test/unittest_ConfigFile.cpp \
+                  ./unit_test/main_unit.cpp
+unittest_OBJS=$(unittest_SOURCES:.cpp=.o)
+ifdef unittest_FLAG
+#SOURCES +=$(unit_test_SOURCES)
+#OBJS +=$(unit_test_OBJS)
+#INCLUDES += -I./unit_test -I./unit_teset/pub_lib -I./unit_test/pub_lib/cppunit_tool
+#LIB_DIR += -Lunit_test/pub_lib/cppunit_tool/linux64
+#SO_LIBS +=-lcppunit
+unittest_INCLUDES:=-I./unit_test -I./unit_teset/pub_lib -I./unit_test/pub_lib/cppunit_tool
+unittest_LIB_DIR:=-Lunit_test/pub_lib/cppunit_tool/linux64
+unittest_LIBS:=-lcppunit
+endif
 
 #汇总所有的源文件
-TARGET:=unittest
+TARGET:=self_prog
 #输出路径
 OUTPUT_DIR:=./bin
 all:$(TARGET)
 
-unittest:$(OBJS)
+#单元测试构建规则
+$(TARGET):$(OBJS)
+	$(GCC) -o $@ $(LIB_DIR) $(SO_LIBS)  $(OBJS)
 
 #$@表示目标; $^表示所有依赖文件; $<表示第一个依赖文件
 #模式规则: 
@@ -115,8 +131,17 @@ $(COMMON_OBJS): %.o:%.cpp
 	${CXX}     ${DCPPFLAGS}    ${CXXFLAGS}    ${INCLUDES}   $<
 
 
+
+#单元测试构建规则
+unittest:$(OBJS) $(unittest_OBJS)
+	$(GCC) -o $@ $(LIB_DIR) $(SO_LIBS) $(unittest_LIB_DIR) $(unit_test_LIB_DIR)  $(OBJS) $(unittest_OBJS)
+$(unittest_OBJS): %.o:%.cpp
+	$(GCC) -o $@ $(DCPPFLAGS) $(CFLAGS) $(INCLUDES) $(unittest_INCLUDES) $<
+
+
 clean:
 	rm -f $(OBJS)
+	rm -rf $(unittest_OBJS) unittest #清理单元测试相关内容
 
 test:
 	@echo "AutoSources=[${AUTO_SOURCES}]"

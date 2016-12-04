@@ -17,7 +17,7 @@ inline char *trim_left(char *str, char ch=' ')
    //左侧没有指定字符
    if(pSrc==pDst) return str;
 
-   while((*pDst++==*pSrc++)!='\0');
+   while((*pDst++=*pSrc++)!='\0');
    return str;
 }
 
@@ -27,7 +27,7 @@ inline char *trim_right(char *str, char ch=' ')
     if((NULL==str)||('\0'==ch)) return str;
 
    char *ptr=str+strlen(str)-1;
-   while((ch==*ptr)&&(ptr>=str))
+   while((ptr>=str)&&(ch==*ptr))//注意两个逻辑判断的顺序,不要弄反了
       *ptr--='\0';
 
    return str;
@@ -58,7 +58,7 @@ inline char *trim_left_blank(char *str)
    if(0==num) return str;
 
    pSrc=str+num;
-   while((*pDst++==*pSrc++)!='\0');
+   while((*pDst++=*pSrc++)!='\0');
    return str;
 }
 //移除字符串右侧指定的空白字符(即' '和'\t'), str必须可被修改
@@ -67,7 +67,7 @@ inline char *trim_right_blank(char *str)
   if(NULL==str) return str;
 
   char *ptr=str+strlen(str)-1;
-  while((0!=is_blank(*ptr))&&(ptr>=str))
+  while((ptr>=str)&&(0!=is_blank(*ptr)))//顺序不要弄反了
       *ptr--='\0';
 
    return str;
