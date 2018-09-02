@@ -29,22 +29,44 @@ void BubbleSort(SqList *L)
     }
 }
 
-/*改进冒泡排序*/
+/*改进冒泡排序: 每次外层循环,没有交换发生,说明已经完成排序*/
 void BubbleSort2(SqList *L)
 {
     int i,j;
     bool bSwaped=true;
     for(i=0; i<L->length && bSwaped; ++i)//bSwaped=false,说明没有发生交换,顺序已经满足要求
     {
+        bSwaped=false;
         for(j=L->length-1; j>i; --j)
         {
-            bSwaped=false;
             if(L->r[j-1] > L->r[j])
             {
                 swap(L->r[j-1], L->r[j]);
                 bSwaped = true;
             }
         }
+    }
+}
+
+/*改进冒泡排序: 记录上次交换发生地点,如果本次循环,交换地点没有发现变化,则排序完成*/
+void BubbleSort3(SqList *L)
+{
+    int i,j;
+    int lastSwapPos = 0,lastSwapPosTmp=0;//bool bSwaped=true;
+    for(i=0; i<L->length ; ++i)//bSwaped=false,说明没有发生交换,顺序已经满足要求
+    {
+        lastSwapPos =lastSwapPosTmp;
+        for(j=L->length-1; j>lastSwapPos; --j)
+        {
+            if(L->r[j-1] > L->r[j])
+            {
+                swap(L->r[j-1], L->r[j]);
+                lastSwapPosTmp=j;
+            }
+        }
+
+        if(lastSwapPos ==lastSwapPosTmp)
+            break;
     }
 }
 
@@ -63,7 +85,7 @@ int main(int argc, char **argv)
     L.r[8]=2;
     L.length = 9;
 
-    BubbleSort2(&L);//BubbleSort(&L);
+    BubbleSort3(&L);//BubbleSort2(&L);//BubbleSort(&L);
     printf("冒泡排序:");
     for(int i = 0; i<L.length; ++i)
     {
